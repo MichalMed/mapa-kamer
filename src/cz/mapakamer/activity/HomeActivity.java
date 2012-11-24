@@ -62,7 +62,8 @@ public class HomeActivity extends Activity {
 	}
 	
 	public void showMap() {
-		
+		Intent i = new Intent(this, CameraMapActivity.class);
+		startActivity(i);
 	}
 	
 	public void showAbout() {

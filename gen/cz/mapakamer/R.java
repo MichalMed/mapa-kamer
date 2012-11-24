@@ -36,31 +36,33 @@ public final class R {
     public static final class id {
         public static final int TextView1=0x7f070000;
         public static final int TextView2=0x7f070002;
-        public static final int butCameraCapture=0x7f070008;
-        public static final int butCameraSend=0x7f070009;
-        public static final int etCameraDesc=0x7f07000b;
-        public static final int etCameraLocation=0x7f07000d;
-        public static final int etCameraLocationAddress=0x7f07000f;
+        public static final int butCameraCapture=0x7f070009;
+        public static final int butCameraSend=0x7f07000a;
+        public static final int etCameraDesc=0x7f07000c;
+        public static final int etCameraLocation=0x7f07000e;
+        public static final int etCameraLocationAddress=0x7f070010;
         public static final int imageView1=0x7f070001;
         public static final int imageView2=0x7f070005;
         public static final int imageView3=0x7f070007;
-        public static final int ivCameraImage=0x7f070011;
+        public static final int ivCameraImage=0x7f070012;
         public static final int llAbout=0x7f070006;
         public static final int llAddCamera=0x7f070003;
         public static final int llShowMap=0x7f070004;
-        public static final int progressBar1=0x7f070014;
-        public static final int textView1=0x7f070012;
-        public static final int textView2=0x7f070013;
-        public static final int tvCameraDesc=0x7f07000a;
-        public static final int tvCameraImage=0x7f070010;
-        public static final int tvCameraLocation=0x7f07000c;
-        public static final int tvCameraLocationAddress=0x7f07000e;
+        public static final int mapview=0x7f070008;
+        public static final int progressBar1=0x7f070015;
+        public static final int textView1=0x7f070013;
+        public static final int textView2=0x7f070014;
+        public static final int tvCameraDesc=0x7f07000b;
+        public static final int tvCameraImage=0x7f070011;
+        public static final int tvCameraLocation=0x7f07000d;
+        public static final int tvCameraLocationAddress=0x7f07000f;
     }
     public static final class layout {
         public static final int activity_about=0x7f030000;
         public static final int activity_home=0x7f030001;
-        public static final int activity_new_camera=0x7f030002;
-        public static final int activity_splash=0x7f030003;
+        public static final int activity_map=0x7f030002;
+        public static final int activity_new_camera=0x7f030003;
+        public static final int activity_splash=0x7f030004;
     }
     public static final class string {
         public static final int about=0x7f050007;
