@@ -21,6 +21,10 @@
     <string name="camera_image">Snímek kamery</string>
     <string name="capture_camera">Vyfotit kameru</string>
     <string name="send_camera">Odeslat kameru</string>
+    <string name="camera_detail_title">Detail kamery</string>
+    <string name="camera_saved">Kamera úspěšně uložena.</string>
+    
+    
     <string name="fail_capture">Nezdařilo se pořídit snímek!</string>
     <string name="gps_not_enabled">GPS zařízení je vypnuté. Pro získání přesnějšího polohy jej prosím zapněte. Přejete si přejít do nastavení?</string>
 </resources>

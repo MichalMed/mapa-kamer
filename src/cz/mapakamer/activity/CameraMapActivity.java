@@ -8,7 +8,9 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
+
 import cz.mapakamer.R;
+import cz.mapakamer.app.MapaKamerApp;
 import cz.mapakamer.entity.Camera;
 import cz.mapakamer.map.CameraMapOverlay;
 import cz.mapakamer.map.CameraMapOverlayItem;
@@ -18,19 +20,23 @@ import android.os.Bundle;
 
 public class CameraMapActivity extends MapActivity {
 
+	private MapaKamerApp app;
 	protected List<Overlay> mapOverlays;
     private MyLocationOverlay myLocationOverlay;
-	protected MapView mapView;	
-	private ArrayList<Camera> allCameras;
+	protected MapView mapView;
     protected Location myLocation;
     
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        
+        app = ((MapaKamerApp)this.getApplication());
    
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
+        //mapView.setStreetView(false);
+        mapView.setSatellite(false);
         
         mapOverlays = mapView.getOverlays();
         
@@ -45,10 +51,7 @@ public class CameraMapActivity extends MapActivity {
         mapOverlays.add(myLocationOverlay);
         
         myLocation = GPSUtility.getLastGps(this);
-        
-        allCameras = new ArrayList<Camera>();
-        initSomeCameras(); 
-        
+                        
         if (myLocation != null) {
         	//TODO / only in some area or all?
     		showCameras(getAllCameras(),
@@ -100,35 +103,13 @@ public class CameraMapActivity extends MapActivity {
         return zoom;
     }
     
-    
-    private void initSomeCameras() {        	
-    	//TODO
-    	Camera first = new Camera();
-    	first.setLatitude(50.06237349443927);
-    	first.setLongitude(14.444809198903386);
-    	first.setDescription("popisek prvni kamery");
-    	first.setDistance(Camera.howFar(first.getLatitude(), first.getLongitude(), myLocation.getLatitude(), myLocation.getLongitude()));
-    	allCameras.add(first);  
-    	
-    	Camera second = new Camera();
-    	second.setLatitude(50.07479677603857);
-    	second.setLongitude(14.480924606323242);
-    	second.setDescription("popisek druhe kamery");
-    	second.setDistance(Camera.howFar(second.getLatitude(), second.getLongitude(), myLocation.getLatitude(), myLocation.getLongitude()));
-    	allCameras.add(second); 
-    	
-    	Camera third = new Camera();
-    	third.setLatitude(50.0857849787494);
-    	third.setLongitude(14.405213358113542);
-    	third.setDescription("popisek treti kamery");
-    	third.setDistance(Camera.howFar(third.getLatitude(), third.getLongitude(), myLocation.getLatitude(), myLocation.getLongitude()));
-    	allCameras.add(third); 
-    }
-    
     private ArrayList<Camera> getAllCameras() {
-    	return allCameras;    	
+    	if (app.getAllCameraSize() == 0) {
+    		app.initSomeCameras(myLocation);
+    	}
+    	return app.getAllCameras();    	
     }
-        
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -146,17 +127,20 @@ public class CameraMapActivity extends MapActivity {
 		return false;
 	}
 	
-	public static byte getZoomLevel(double distance) {
-        byte zoom = 1;
-        double E = 40075;
-        zoom = (byte) Math.round(Math.log(E / distance) / Math.log(2) + 1);
+	public static byte getZoomLevel (double distance){
+	    byte zoom=1;
+	    double E = 40075;
 
-        if (zoom > 21)
-            zoom = 21;
-        if (zoom < 1)
-            zoom = 1;
+	    if (distance == 0) {
+	    	return 21;
+	    } 
+	    
+	    zoom = (byte) Math.round(Math.log(E/distance)/Math.log(2)+1);
 
-        return zoom;
-    }
+	    if (zoom>21) zoom=21;
+	    if (zoom<1) zoom =1;
+
+	    return zoom;
+	}
 				
 }

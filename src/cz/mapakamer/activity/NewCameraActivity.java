@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.IOException;
 
 import cz.mapakamer.R;
+import cz.mapakamer.app.MapaKamerApp;
 import cz.mapakamer.entity.Camera;
 import cz.mapakamer.utils.GPSUtility;
 import cz.mapakamer.utils.ImageUtility;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -29,6 +33,7 @@ public class NewCameraActivity extends Activity {
 
 	public static final int CAPTURE_IMG = 0;
 	
+	private MapaKamerApp app;
 	protected Camera camera;
 	private Uri imageUri;
 	private Bitmap imageBitmap;
@@ -47,6 +52,8 @@ public class NewCameraActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_camera);
       
+        app = (MapaKamerApp) getApplication();
+        
         et_location = (EditText)findViewById(R.id.etCameraLocation);
         et_address = (EditText)findViewById(R.id.etCameraLocationAddress);
         et_desc = (EditText)findViewById(R.id.etCameraDesc);
@@ -148,29 +155,27 @@ public class NewCameraActivity extends Activity {
 	
 	public void sendCamera(View view) {
 		
-		//TODO
+		//TODO / pro prezentacni ucely.... predelat na sql lite/ server post task
 		
 		Thread thread = new Thread() {
 			
 			boolean running;
 			
-		    @Override
+			@Override
 		    public void run() {
 		        try {
 		        	running = true;
 		            while(running) {
+		            	Log.d("", "SAVING CAMERA...");
+		            	
 		            	camera.setDescription(et_desc.getText().toString());
-		        		camera.setImageBase64Encoded(ImageUtility.encodeImagetoBase64(imageBitmap));
+		        		camera.setImageBase64Encoded(ImageUtility.encodeTobase64(imageBitmap));
+		        		camera.setId(app.getNextCameraID());
+		        				        		
+		        		app.addNewCamera(camera);
 		        		
-		        		Log.d("", "SAVING CAMERA...");
-		        		Log.d("", "GPS latitude: " + camera.getLatitude() );
-		        		Log.d("", "GPS longitude: " + camera.getLongitude() );
-		        		Log.d("", "GPS address: " + camera.getAddress() );
-		        		Log.d("", "Author: " + camera.getAuthor() );
-		        		Log.d("", "Status: " + camera.getStatus() );
-		        		Log.d("", "Desc: " + camera.getDescription() );
-		        		
-		        		Log.d("", "IMG BASE64: " + camera.getImageBase64Encoded() );
+		        		Log.d("", "CAMERA SAVED...");
+		        				        				        		
 		        		running = false;
 		            }
 		        } catch (Exception e) {
@@ -182,6 +187,22 @@ public class NewCameraActivity extends Activity {
 		thread.start();
 				
 	}
+	
+	
+	private Builder cameraSavedDialogPreperation() {
+        Builder dialog;
+        dialog = new AlertDialog.Builder(this);
+
+        dialog.setMessage(getResources().getString(R.string.camera_saved));
+        dialog.setPositiveButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        return dialog;
+    }
 	
 	@Override
     public void onResume() {		

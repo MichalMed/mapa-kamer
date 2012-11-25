@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.google.android.maps.MapView;
 import com.readystatesoftware.mapviewballoons.BalloonItemizedOverlay;
 import com.readystatesoftware.mapviewballoons.BalloonOverlayView;
+import cz.mapakamer.activity.CameraDetailActivity;
 import cz.mapakamer.entity.Camera;
 
 public class CameraMapOverlay extends BalloonItemizedOverlay<CameraMapOverlayItem> {
@@ -38,13 +39,13 @@ public class CameraMapOverlay extends BalloonItemizedOverlay<CameraMapOverlayIte
 
     @Override
     protected boolean onBalloonTap(int index, CameraMapOverlayItem item) {
-        //TODO
-    	/*
+        
     	Camera camera = overlays.get(index).getCamera();
-        Intent intent = new Intent();
+        Intent intent = new Intent(context, CameraDetailActivity.class);
         intent.putExtra("camera", camera.getId());
+        
         context.startActivity(intent);
-        */
+        
     	return true;
     }
 
