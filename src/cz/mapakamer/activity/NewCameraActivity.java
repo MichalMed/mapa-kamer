@@ -6,6 +6,7 @@ import java.io.IOException;
 import cz.mapakamer.R;
 import cz.mapakamer.entity.Camera;
 import cz.mapakamer.utils.GPSUtility;
+import cz.mapakamer.utils.ImageUtility;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -28,12 +29,14 @@ public class NewCameraActivity extends Activity {
 
 	public static final int CAPTURE_IMG = 0;
 	
-	Camera camera;
+	protected Camera camera;
 	private Uri imageUri;
+	private Bitmap imageBitmap;
 	private Location gpsLocation;
     private Location networkLocation;
     private LocationListener gpsLocListener;
     private LocationListener networkLocListener;
+    private boolean gpsDialogAnswered;
     
     private EditText et_desc;
     private EditText et_location;
@@ -50,23 +53,21 @@ public class NewCameraActivity extends Activity {
         
         camera = new Camera();
         camera.setAuthor("Anonym");
-        
-        initLocation();
+                
     }
 	
 	private void initLocation() {
         gpsLocListener = new LocationListener() {
-
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
-
             public void onProviderEnabled(String provider) {
             }
-
             public void onProviderDisabled(String provider) {
-                GPSUtility.checkGPS(NewCameraActivity.this);
+            	if (!gpsDialogAnswered) {
+            		GPSUtility.checkGPS(NewCameraActivity.this);
+            		gpsDialogAnswered = true;
+            	}                
             }
-
             public void onLocationChanged(Location location) {
             	gpsLocation = location;
             	updateLocation();
@@ -75,29 +76,24 @@ public class NewCameraActivity extends Activity {
         };
 
         networkLocListener = new LocationListener() {
-
-            public void onStatusChanged(String provider, int status,
-                    Bundle extras) {
+            public void onStatusChanged(String provider, int status, Bundle extras) {
             }
-
             public void onProviderEnabled(String provider) {
             }
-
             public void onProviderDisabled(String provider) {
             }
-
             public void onLocationChanged(Location location) {
             	networkLocation = location;
                 updateLocation();
             }
         };
         
-        LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        setProgressBarIndeterminateVisibility(Boolean.TRUE);
-        locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
-                gpsLocListener);
-        locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkLocListener);
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, gpsLocListener);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkLocListener);
 
+        setProgressBarIndeterminateVisibility(Boolean.TRUE);
     }
 	
 	public void updateLocation() {
@@ -139,11 +135,11 @@ public class NewCameraActivity extends Activity {
 	            ContentResolver cr = getContentResolver();
 	            Bitmap bitmap;
 	            try {
-	                 bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr, selectedImage);
+	            	bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr, selectedImage);
 	                imageView.setImageBitmap(bitmap);
+	                imageBitmap = bitmap;
 	            } catch (Exception e) {
-	                Toast.makeText(this, getResources().getString(R.string.fail_capture), Toast.LENGTH_SHORT)
-	                        .show();
+	                Toast.makeText(this, getResources().getString(R.string.fail_capture), Toast.LENGTH_SHORT).show();
 	                Log.e("Camera", e.toString());
 	            }
 	        }
@@ -151,16 +147,40 @@ public class NewCameraActivity extends Activity {
 	}
 	
 	public void sendCamera(View view) {
-		camera.setDescription(et_desc.getText().toString());
 		
-		Log.d("", "SAVING CAMERA...");
-		Log.d("", "GPS latitude: " + camera.getLatitude() );
-		Log.d("", "GPS longitude: " + camera.getLongitude() );
-		Log.d("", "GPS address: " + camera.getAddress() );
-		Log.d("", "Author: " + camera.getAuthor() );
-		Log.d("", "Status: " + camera.getStatus() );
-		Log.d("", "Desc: " + camera.getDescription() );
+		//TODO
 		
+		Thread thread = new Thread() {
+			
+			boolean running;
+			
+		    @Override
+		    public void run() {
+		        try {
+		        	running = true;
+		            while(running) {
+		            	camera.setDescription(et_desc.getText().toString());
+		        		camera.setImageBase64Encoded(ImageUtility.encodeImagetoBase64(imageBitmap));
+		        		
+		        		Log.d("", "SAVING CAMERA...");
+		        		Log.d("", "GPS latitude: " + camera.getLatitude() );
+		        		Log.d("", "GPS longitude: " + camera.getLongitude() );
+		        		Log.d("", "GPS address: " + camera.getAddress() );
+		        		Log.d("", "Author: " + camera.getAuthor() );
+		        		Log.d("", "Status: " + camera.getStatus() );
+		        		Log.d("", "Desc: " + camera.getDescription() );
+		        		
+		        		Log.d("", "IMG BASE64: " + camera.getImageBase64Encoded() );
+		        		running = false;
+		            }
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+		};
+
+		thread.start();
+				
 	}
 	
 	@Override

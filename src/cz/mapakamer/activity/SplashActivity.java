@@ -52,5 +52,11 @@ public class SplashActivity extends Activity {
         }
         return true;
     }
+    
+    @Override
+    public void onBackPressed() {
+    	active = false;
+    	super.onBackPressed();
+    }
 
 }

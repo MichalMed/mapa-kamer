@@ -1,5 +1,7 @@
 package cz.mapakamer.entity;
 
+import android.location.Location;
+
 
 public class Camera {
 
@@ -14,8 +16,11 @@ public class Camera {
     private String description;    
     private String author;
     private int status;
+	private String imageBase64Encoded;
+	private int distance;
+    
 	
-	
+
 	public Camera() {
 		this.status = STATUS_NEW;
 	}
@@ -62,7 +67,36 @@ public class Camera {
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}	
+	public int getDistance() {
+		return distance;
+	}
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+	public String getImageBase64Encoded() {
+		return imageBase64Encoded;
+	}
+	public void setImageBase64Encoded(String imageBase64Encoded) {
+		this.imageBase64Encoded = imageBase64Encoded;
 	}
 	
+	
+	
+	
+	public static int howFar(double lat1, double long1, double lat2, double long2) {
+        float result[] = new float[3];
+        Location.distanceBetween(lat1, long1, lat2, long2, result);
+        return (int) result[0];
+    }
+	
+	//by distance
+	public int compare(Camera camera1, Camera camera2) {
+        if (camera1.getDistance() > camera2.getDistance())
+            return 1;
+        if (camera1.getDistance() < camera2.getDistance())
+            return -1;
+        return 0;
+    }
     
 }

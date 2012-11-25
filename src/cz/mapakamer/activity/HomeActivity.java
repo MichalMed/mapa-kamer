@@ -71,7 +71,4 @@ public class HomeActivity extends Activity {
 		startActivity(i);
 	}
 	
-	
-	
-		
 }
